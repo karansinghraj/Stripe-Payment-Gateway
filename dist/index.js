@@ -17,6 +17,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const dbConfig_1 = require("./config/dbConfig");
 const stripeRoute_1 = require("./routes/stripeRoute");
 const userRoute_1 = require("./routes/userRoute");
+const paymentReminder_1 = require("./utilis/paymentReminder");
 const path_1 = __importDefault(require("path"));
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
@@ -52,6 +53,7 @@ app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 app.use("/api/user", userRoute_1.userRoute);
 app.use("/api/stripe/pay", stripeRoute_1.stripeRoute);
+(0, paymentReminder_1.scheduleDailySubscriptionReminders)();
 app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, dbConfig_1.connectToMongoDB)();
     console.log(`server started on port : ${port}`);

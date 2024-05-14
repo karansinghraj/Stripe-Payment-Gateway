@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { connectToMongoDB } from "./config/dbConfig";
 import { stripeRoute } from "./routes/stripeRoute";
 import { userRoute } from "./routes/userRoute";
+import { scheduleDailySubscriptionReminders } from "./utilis/paymentReminder";
 import path from "path";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
@@ -43,6 +44,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/user", userRoute);
 app.use("/api/stripe/pay", stripeRoute);
+
+scheduleDailySubscriptionReminders();
 
 app.listen(port, async () => {
   await connectToMongoDB();

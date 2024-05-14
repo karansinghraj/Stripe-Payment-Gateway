@@ -130,6 +130,7 @@ function stripeWebhook(req, res) {
                         else {
                             console.log("Subscription already exists for userID:", userId);
                         }
+                        subscription.resetRequestCountIfMonthPassed();
                         let sessionStatus;
                         const paymentStatus = sessionDetail.payment_status;
                         if (paymentStatus === "paid") {
@@ -148,12 +149,12 @@ function stripeWebhook(req, res) {
                             }
                             let emailObj = {
                                 heading: "Welcome to AI SQUAD",
-                                html: "<p>Dear User,</p><p>Thank you for your payment! Your subscription payment was successful, and your account is now activated.</p><p>You have been subscribed to our service, and you are now able to make requests and fully utilize our platform.</p><p>Amount Paid: $XX.XX</p><p>Subscription Status: Active</p><p>If you have any questions or need assistance, feel free to contact us at support@aisquad.com.</p><p>Best regards,<br/>AI SQUAD Team</p>",
+                                html: `<p>Dear User,</p><p>Thank you for your payment! Your subscription payment was successful, and your account is now activated.</p><p>You have been subscribed to our service, and you are now able to make requests and fully utilize our platform.</p><p>Amount Paid: ¢ ${amountPaid} cent</p><p>Subscription Status: Active</p><p>If you have any questions or need assistance, feel free to contact us at support@aisquad.com.</p><p>Best regards,<br/>AI SQUAD Team</p>`,
                                 host: "https://aisquad.com",
-                                recipient: ((_a = sessionDetail === null || sessionDetail === void 0 ? void 0 : sessionDetail.customer_details) === null || _a === void 0 ? void 0 : _a.email) || "xyz@example.com",
+                                recipient: (_a = sessionDetail === null || sessionDetail === void 0 ? void 0 : sessionDetail.customer_details) === null || _a === void 0 ? void 0 : _a.email,
                                 subject: "Payment Successful - Subscription Activated",
                             };
-                            const notificationMail = yield (0, helperFunction_1.sendEmail)(emailObj);
+                            yield (0, helperFunction_1.sendEmail)(emailObj);
                         }
                         else {
                             subscription.subscriptionType = null;
@@ -165,7 +166,6 @@ function stripeWebhook(req, res) {
                         });
                         // Update lastRequestTimestamp and reset requestCount if necessary
                         subscription.lastRequestTimestamp = new Date();
-                        subscription.resetRequestCountIfMonthPassed();
                         yield subscription.save();
                         console.log("Session details stored in subscription:", sessionId);
                     }

@@ -119,6 +119,7 @@ async function stripeWebhook(req: Request, res: Response) {
           } else {
             console.log("Subscription already exists for userID:", userId);
           }
+          subscription.resetRequestCountIfMonthPassed();
 
           let sessionStatus;
           const paymentStatus = sessionDetail.payment_status;
@@ -138,14 +139,12 @@ async function stripeWebhook(req: Request, res: Response) {
 
             let emailObj = {
               heading: "Welcome to AI SQUAD",
-              html: "<p>Dear User,</p><p>Thank you for your payment! Your subscription payment was successful, and your account is now activated.</p><p>You have been subscribed to our service, and you are now able to make requests and fully utilize our platform.</p><p>Amount Paid: $XX.XX</p><p>Subscription Status: Active</p><p>If you have any questions or need assistance, feel free to contact us at support@aisquad.com.</p><p>Best regards,<br/>AI SQUAD Team</p>",
+              html: `<p>Dear User,</p><p>Thank you for your payment! Your subscription payment was successful, and your account is now activated.</p><p>You have been subscribed to our service, and you are now able to make requests and fully utilize our platform.</p><p>Amount Paid: ¢ ${amountPaid} cent</p><p>Subscription Status: Active</p><p>If you have any questions or need assistance, feel free to contact us at support@aisquad.com.</p><p>Best regards,<br/>AI SQUAD Team</p>`,
               host: "https://aisquad.com",
-              recipient:
-                sessionDetail?.customer_details?.email || "xyz@example.com",
+              recipient: sessionDetail?.customer_details?.email,
               subject: "Payment Successful - Subscription Activated",
             };
-
-            const notificationMail = await sendEmail(emailObj);
+            await sendEmail(emailObj);
           } else {
             subscription.subscriptionType = null;
             sessionStatus = "fail";
@@ -157,7 +156,6 @@ async function stripeWebhook(req: Request, res: Response) {
           });
           // Update lastRequestTimestamp and reset requestCount if necessary
           subscription.lastRequestTimestamp = new Date();
-          subscription.resetRequestCountIfMonthPassed();
           await subscription.save();
           console.log("Session details stored in subscription:", sessionId);
         } catch (error) {

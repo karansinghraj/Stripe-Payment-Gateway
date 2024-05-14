@@ -21,6 +21,10 @@ const stripeRoute = express.Router();
  *               userId:
  *                 type: string
  *                 description: The ID of the user initiating the payment session
+ *               subscriptionType:
+ *                 type: string
+ *                 enum: [basic, pro]
+ *                 description: The type of subscription (basic or pro)
  *     responses:
  *       '200':
  *         description: Successful response

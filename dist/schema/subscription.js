@@ -31,10 +31,36 @@ const subscriptionSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    lastRequestTimestamp: {
+        type: Date,
+        default: Date.now,
+    },
     addOnCount: {
         type: Number,
         default: 0,
     },
+    subscriptionType: {
+        type: String || null,
+        enum: ["basic", "pro"],
+        required: true,
+    },
+    // usageLimit: {
+    //   type: Number,
+    //   default: 100, // Change this to your desired default limit for basic subscription
+    // },
+    // addOnCharge: {
+    //   type: Number,
+    //   default: 10, // Change this to your desired add-on charge for pro subscription
+    // },
 });
+subscriptionSchema.methods.resetRequestCountIfMonthPassed = function () {
+    const now = new Date();
+    const lastMonth = new Date(this.lastRequestTimestamp);
+    lastMonth.setMonth(lastMonth.getMonth() + 1); // Add one month
+    if (now > lastMonth) {
+        this.requestCount = 0;
+        this.lastRequestTimestamp = new Date(); // Assigning current date
+    }
+};
 const Subscription = mongoose_1.default.model("Subscription", subscriptionSchema);
 exports.Subscription = Subscription;

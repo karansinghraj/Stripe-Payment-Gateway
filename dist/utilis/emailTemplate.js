@@ -17,11 +17,11 @@ const generalFormat = function (dataObj) {
         background-color: #f5f5f5;
       }
       .container {
-        width: 100%;
+        width: 80%;
         max-width: 600px;
-        margin: 20px auto;
+        margin: 30px auto;
         background-color: #fff;
-        border-radius: 10px;
+        border-radius: 100px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
       .header {

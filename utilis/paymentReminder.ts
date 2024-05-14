@@ -38,23 +38,26 @@ function scheduleDailySubscriptionReminders() {
   // Schedule job to run at midnight every day
   // 0 0 * * * : minute hour dayOfMonth month dayOfWeek
   // 0 9 * * * : every day 9:00 AM
-  // 30 6 * * * : everyday 6:30 PM
-  const job = schedule.scheduleJob("0 0 * * *", async () => {
+  // 30 18  * * * : everyday 6:30 PM
+  const job = schedule.scheduleJob("09 19 * * *", async () => {
     try {
       // Find all active subscriptions
       const subscriptions = await Subscription.find({
         subscriptionType: { $ne: null }, // it will get all value after from null subscriptionType
       });
-
+      console.log("running the scheduler", subscriptions);
       // Get today's date
       const today = new Date();
 
       // Iterate through each subscription
       subscriptions.forEach(async (subscription) => {
-        // Calculate the reminder date (5 days before the last payment date)
-        const reminderDate = new Date(subscription.lastRequestTimestamp);
-        reminderDate.setDate(reminderDate.getDate() - 5);
+        // Calculate the end of the subscription month
+        const endOfMonth = new Date(subscription.lastRequestTimestamp);
+        endOfMonth.setMonth(endOfMonth.getMonth() + 1);
 
+        // Calculate the reminder date (5 days before the end of the subscription month)
+        const reminderDate = new Date(endOfMonth);
+        reminderDate.setDate(reminderDate.getDate() - 5);
         // Check if the reminder date is today
         if (reminderDate.toDateString() === today.toDateString()) {
           // Send reminder email to user

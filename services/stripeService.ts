@@ -7,19 +7,17 @@ dotenv.config();
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
 const stripeInstance = new stripe(stripeSecretKey);
+// Assuming you have different price IDs for basic and pro subscriptions
+const basicPriceId = process.env.BASIC_SUBSCRIPTION_PRODUCT_ID;
+const proPriceId = process.env.PRO_SUBSCRIPTION_PRODUCT_ID;
+const addOnPriceId = process.env.ADDON_PRODUCT_ID;
 
 async function checkoutPaymentSession(req: Request, model: any) {
   try {
     const { userId, subscriptionType } = model;
-    // Assuming you have different price IDs for basic and pro subscriptions
-    const basicPriceId = process.env.BASIC_SUBSCRIPTION_PRODUCT_ID;
-    const proPriceId = process.env.PRO_SUBSCRIPTION_PRODUCT_ID;
-    const addOnPriceId = process.env.ADDON_PRODUCT_ID;
-
-    const subDetail = await Subscription.findOne({ userID: userId });
-
     let lineItems;
 
+    const subDetail = await Subscription.findOne({ userID: userId });
     if (subDetail) {
       if (subDetail.addOnCount > 0) {
         // If add-on count is greater than 0, include add-on charges
@@ -62,7 +60,6 @@ async function checkoutPaymentSession(req: Request, model: any) {
       message: "Payment session initiated successfully",
       data: { url: session.url },
     };
-    // res.json({ url: session.url });
   } catch (error: any) {
     console.error(error.message);
     return {
@@ -82,6 +79,7 @@ let emailObj = {
 };
 
 // stripe listen --forward-to http://localhost:5300/api/stripe/webhook
+
 async function stripeWebhook(req: Request, res: Response) {
   try {
     const sig = req.headers["stripe-signature"] || "";

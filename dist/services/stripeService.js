@@ -20,16 +20,16 @@ const helperFunction_1 = require("../utilis/helperFunction");
 dotenv_1.default.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
 const stripeInstance = new stripe_1.default(stripeSecretKey);
+// Assuming you have different price IDs for basic and pro subscriptions
+const basicPriceId = process.env.BASIC_SUBSCRIPTION_PRODUCT_ID;
+const proPriceId = process.env.PRO_SUBSCRIPTION_PRODUCT_ID;
+const addOnPriceId = process.env.ADDON_PRODUCT_ID;
 function checkoutPaymentSession(req, model) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { userId, subscriptionType } = model;
-            // Assuming you have different price IDs for basic and pro subscriptions
-            const basicPriceId = process.env.BASIC_SUBSCRIPTION_PRODUCT_ID;
-            const proPriceId = process.env.PRO_SUBSCRIPTION_PRODUCT_ID;
-            const addOnPriceId = process.env.ADDON_PRODUCT_ID;
-            const subDetail = yield subscription_1.Subscription.findOne({ userID: userId });
             let lineItems;
+            const subDetail = yield subscription_1.Subscription.findOne({ userID: userId });
             if (subDetail) {
                 if (subDetail.addOnCount > 0) {
                     // If add-on count is greater than 0, include add-on charges
@@ -73,7 +73,6 @@ function checkoutPaymentSession(req, model) {
                 message: "Payment session initiated successfully",
                 data: { url: session.url },
             };
-            // res.json({ url: session.url });
         }
         catch (error) {
             console.error(error.message);

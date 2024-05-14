@@ -59,7 +59,8 @@ subscriptionSchema.methods.resetRequestCountIfMonthPassed = function () {
     lastMonth.setMonth(lastMonth.getMonth() + 1); // Add one month
     if (now > lastMonth) {
         this.requestCount = 0;
-        this.lastRequestTimestamp = new Date(); // Assigning current date
+        this.lastRequestTimestamp = now;
+        this.subscriptionType = null; // Set subscriptionType to null
     }
 };
 const Subscription = mongoose_1.default.model("Subscription", subscriptionSchema);

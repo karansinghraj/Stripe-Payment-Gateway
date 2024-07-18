@@ -1,5 +1,5 @@
 import { User } from "../schema/user"; // Import the User schema
-
+import { CustomError } from "../middleware/errorHandler";
 async function createUser(model: any) {
   try {
     const { username, email, password } = model;
@@ -19,13 +19,17 @@ async function createUser(model: any) {
       message: "User Created Successfully",
       data: null,
     }; // Send the saved user object as a response
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return {
-      status: 500,
-      message: "Internal server error",
-      data: null,
-    }; // Send an error response
+  } catch (error: any) {
+    console.error("Error fetching user:", error);
+    throw new CustomError(
+      error.statusCode || 500,
+      error.message || "An error occurred while fetching the user"
+    );
+    // return {
+    //   status: 500,
+    //   message: "Internal server error",
+    //   data: null,
+    // }; // Send an error response
   }
 }
 
@@ -50,13 +54,17 @@ async function getUserById(model: any) {
         data: null,
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching user:", error);
-    return {
-      status: 500,
-      message: "Internal server error",
-      data: null,
-    };
+    throw new CustomError(
+      error.statusCode || 500,
+      error.message || "An error occurred while fetching the user"
+    );
+    // return {
+    //   status: 500,
+    //   message: "Internal server error",
+    //   data: null,
+    // };
   }
 }
 

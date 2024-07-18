@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserById = exports.getAllUsers = exports.createUser = void 0;
 const user_1 = require("../schema/user"); // Import the User schema
+const errorHandler_1 = require("../middleware/errorHandler");
 function createUser(model) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -32,12 +33,13 @@ function createUser(model) {
             }; // Send the saved user object as a response
         }
         catch (error) {
-            console.error("Error creating user:", error);
-            return {
-                status: 500,
-                message: "Internal server error",
-                data: null,
-            }; // Send an error response
+            console.error("Error fetching user:", error);
+            throw new errorHandler_1.CustomError(error.statusCode || 500, error.message || "An error occurred while fetching the user");
+            // return {
+            //   status: 500,
+            //   message: "Internal server error",
+            //   data: null,
+            // }; // Send an error response
         }
     });
 }
@@ -67,11 +69,12 @@ function getUserById(model) {
         }
         catch (error) {
             console.error("Error fetching user:", error);
-            return {
-                status: 500,
-                message: "Internal server error",
-                data: null,
-            };
+            throw new errorHandler_1.CustomError(error.statusCode || 500, error.message || "An error occurred while fetching the user");
+            // return {
+            //   status: 500,
+            //   message: "Internal server error",
+            //   data: null,
+            // };
         }
     });
 }

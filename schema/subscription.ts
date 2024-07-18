@@ -3,6 +3,17 @@ import mongoose, { Document } from "mongoose";
 interface SessionRecord {
   sessionID: string;
   status: string;
+  timestamp?: Date;
+  subscriptionType?: string | null; // e.g., 'basic', 'pro'
+  paymentAmount?: number | 0;
+  paymentStatus?: string; // e.g., 'paid', 'unpaid'
+  invoiceDetail?: string;
+  invoiceID?: string;
+  stripeCustomerId?: string;
+  amountTotal?: number | 0;
+  currency?: string | null;
+  customerName?: string | null;
+  customerEmail?: string | null;
 }
 
 interface SubscriptionDocument extends Document {
@@ -11,9 +22,8 @@ interface SubscriptionDocument extends Document {
   requestCount: number;
   lastRequestTimestamp: Date;
   addOnCount: number;
-  subscriptionType: string | null; // New field for subscription type
-  // usageLimit: number; // New field for usage limit in basic subscription
-  // addOnCharge: number; // New field for add-on charge in pro subscription
+  subscriptionType: string | null;
+  stripeCustomerId: string | null;
   resetRequestCountIfMonthPassed: () => void;
 }
 
@@ -24,22 +34,57 @@ const sessionRecordSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["success", "fail"],
+    enum: ["success", "fail", "complete"],
     required: true,
   },
   timestamp: {
     type: Date,
     default: Date.now,
   },
+  subscriptionType: {
+    type: String,
+    enum: ["basic", "pro"],
+    default: null,
+  },
+  paymentAmount: {
+    type: Number,
+    default: 0,
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["paid", "unpaid"],
+  },
+  invoiceDetail: {
+    type: String,
+  },
+  invoiceID: {
+    type: String,
+  },
+  stripeCustomerId: {
+    type: String,
+  },
+  amountTotal: {
+    type: Number,
+    default: 0,
+  },
+  currency: {
+    type: String,
+  },
+  customerName: {
+    type: String,
+  },
+  customerEmail: {
+    type: String,
+  },
 });
 
 const subscriptionSchema = new mongoose.Schema({
   userID: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Reference to the User collection
+    ref: "User",
     required: true,
   },
-  sessionRecords: [sessionRecordSchema], // Array of session records
+  sessionRecords: [sessionRecordSchema],
   requestCount: {
     type: Number,
     default: 0,
@@ -53,18 +98,14 @@ const subscriptionSchema = new mongoose.Schema({
     default: 0,
   },
   subscriptionType: {
-    type: String || null,
+    type: String,
     enum: ["basic", "pro"],
     required: true,
   },
-  // usageLimit: {
-  //   type: Number,
-  //   default: 100, // Change this to your desired default limit for basic subscription
-  // },
-  // addOnCharge: {
-  //   type: Number,
-  //   default: 10, // Change this to your desired add-on charge for pro subscription
-  // },
+  stripeCustomerId: {
+    type: String,
+    default: null,
+  },
 });
 
 subscriptionSchema.methods.resetRequestCountIfMonthPassed = function (

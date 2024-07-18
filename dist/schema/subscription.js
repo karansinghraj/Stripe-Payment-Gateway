@@ -12,21 +12,56 @@ const sessionRecordSchema = new mongoose_1.default.Schema({
     },
     status: {
         type: String,
-        enum: ["success", "fail"],
+        enum: ["success", "fail", "complete"],
         required: true,
     },
     timestamp: {
         type: Date,
         default: Date.now,
     },
+    subscriptionType: {
+        type: String,
+        enum: ["basic", "pro"],
+        default: null,
+    },
+    paymentAmount: {
+        type: Number,
+        default: 0,
+    },
+    paymentStatus: {
+        type: String,
+        enum: ["paid", "unpaid"],
+    },
+    invoiceDetail: {
+        type: String,
+    },
+    invoiceID: {
+        type: String,
+    },
+    stripeCustomerId: {
+        type: String,
+    },
+    amountTotal: {
+        type: Number,
+        default: 0,
+    },
+    currency: {
+        type: String,
+    },
+    customerName: {
+        type: String,
+    },
+    customerEmail: {
+        type: String,
+    },
 });
 const subscriptionSchema = new mongoose_1.default.Schema({
     userID: {
         type: mongoose_1.default.Schema.Types.ObjectId,
-        ref: "User", // Reference to the User collection
+        ref: "User",
         required: true,
     },
-    sessionRecords: [sessionRecordSchema], // Array of session records
+    sessionRecords: [sessionRecordSchema],
     requestCount: {
         type: Number,
         default: 0,
@@ -40,18 +75,14 @@ const subscriptionSchema = new mongoose_1.default.Schema({
         default: 0,
     },
     subscriptionType: {
-        type: String || null,
+        type: String,
         enum: ["basic", "pro"],
         required: true,
     },
-    // usageLimit: {
-    //   type: Number,
-    //   default: 100, // Change this to your desired default limit for basic subscription
-    // },
-    // addOnCharge: {
-    //   type: Number,
-    //   default: 10, // Change this to your desired add-on charge for pro subscription
-    // },
+    stripeCustomerId: {
+        type: String,
+        default: null,
+    },
 });
 subscriptionSchema.methods.resetRequestCountIfMonthPassed = function () {
     const now = new Date();

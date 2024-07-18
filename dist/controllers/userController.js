@@ -11,20 +11,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetAllUsers = exports.GetUserById = exports.CreateUser = void 0;
 const userService_1 = require("../services/userService");
-function CreateUser(req, res) {
+function CreateUser(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const model = req.body;
-        console.log(req.body);
-        const response = yield (0, userService_1.createUser)(model);
-        res.status(response.status).json(response);
+        try {
+            const model = req.body;
+            console.log(req.body);
+            const response = yield (0, userService_1.createUser)(model);
+            res.status(response.status).json(response);
+        }
+        catch (error) {
+            next(error); // Pass the error to the error-handling middleware
+        }
     });
 }
 exports.CreateUser = CreateUser;
-function GetUserById(req, res) {
+function GetUserById(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const model = req.query;
-        const response = yield (0, userService_1.getUserById)(model);
-        res.status(response.status).json(response);
+        try {
+            const model = req.query;
+            const response = yield (0, userService_1.getUserById)(model);
+            res.status(response.status).json(response);
+        }
+        catch (error) {
+            next(error); // Pass the error to the error-handling middleware
+        }
     });
 }
 exports.GetUserById = GetUserById;

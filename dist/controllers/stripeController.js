@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StripeWebhook = exports.StripePaymentSession = void 0;
+exports.invoiceDetails = exports.userPaymentSessions = exports.StripeWebhook = exports.StripePaymentSession = void 0;
 const stripeService_1 = require("../services/stripeService");
 function StripePaymentSession(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -26,3 +26,19 @@ function StripeWebhook(req, res) {
     });
 }
 exports.StripeWebhook = StripeWebhook;
+function userPaymentSessions(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const model = req.body;
+        const response = yield (0, stripeService_1.userPaymentSession)(model);
+        res.status(response.status).json(response);
+    });
+}
+exports.userPaymentSessions = userPaymentSessions;
+function invoiceDetails(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const model = req.body;
+        const response = yield (0, stripeService_1.invoiceDetail)(model);
+        res.status(response.status).json(response);
+    });
+}
+exports.invoiceDetails = invoiceDetails;

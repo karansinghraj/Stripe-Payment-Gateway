@@ -21,6 +21,10 @@ const userSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    stripeCustomerId: {
+        type: String,
+        default: null,
+    },
 }, {
     timestamps: true, // Automatically add createdAt and updatedAt fields
 });

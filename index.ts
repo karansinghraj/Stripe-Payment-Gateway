@@ -7,6 +7,7 @@ import { scheduleDailySubscriptionReminders } from "./utilis/paymentReminder";
 import path from "path";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { errorHandler } from "./middleware/errorHandler";
 dotenv.config();
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/user", userRoute);
 app.use("/api/stripe/pay", stripeRoute);
 
 scheduleDailySubscriptionReminders();
+app.use(errorHandler);
 
 app.listen(port, async () => {
   await connectToMongoDB();
